@@ -26,8 +26,8 @@ export const DeletePostDialog: React.FC<Props> = ({
 
   const { mutateAsync: deletePost, isLoading } = useDeletePost(postId);
 
-  const handleDelete = async () => {
-    await deletePost();
+  const handleDelete = () => {
+    deletePost();
     setSelectedPost?.(undefined);
     setIsOpen(false);
   };

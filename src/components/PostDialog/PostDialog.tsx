@@ -26,17 +26,11 @@ export const PostDialog: React.FC<Props> = ({
   const [postBody, setPostBody] = useState<string>("");
   const [postTitle, setPostTitle] = useState<string>("");
 
-  const {
-    mutateAsync: createPost,
-    isLoading: createLoading,
-    isSuccess: successCreate,
-  } = useCreatePost();
+  const { mutateAsync: createPost, isLoading: createLoading } = useCreatePost();
 
-  const {
-    mutateAsync: updatePost,
-    isLoading: updateLoading,
-    isSuccess: successUpdate,
-  } = useUpdatePost(defaultValues?.id);
+  const { mutateAsync: updatePost, isLoading: updateLoading } = useUpdatePost(
+    defaultValues?.id
+  );
 
   const handleClose = () => {
     setIsOpen(false);
@@ -44,17 +38,13 @@ export const PostDialog: React.FC<Props> = ({
     setPostTitle("");
   };
 
-  useEffect(() => {
-    if (successCreate || successUpdate) handleClose();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [successCreate, successUpdate]);
-
   const handleSubmit = () => {
     if (defaultValues) {
       updatePost({ body: postBody, title: postTitle });
     } else {
       createPost({ id: nanoid(), body: postBody, title: postTitle });
     }
+    handleClose();
   };
 
   useEffect(() => {
