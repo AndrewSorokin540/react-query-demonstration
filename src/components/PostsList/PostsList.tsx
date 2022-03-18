@@ -7,22 +7,15 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-import { useQuery } from "react-query";
 
-import api from "api";
-
+import { useGetPosts } from "react-query-hooks/Posts";
 import { PostDialog } from "components/PostDialog";
-
 import { useSelectedPostContext } from "context/selectedPostCotext";
 
 import { PostT } from "types";
 
 export const PostsList: React.FC = () => {
-  const {
-    data: posts,
-    isError,
-    isLoading,
-  } = useQuery("posts", api.postsService.getPosts);
+  const { data: posts, isError, isLoading } = useGetPosts();
 
   const { selectedPost, setSelectedPost } = useSelectedPostContext();
 

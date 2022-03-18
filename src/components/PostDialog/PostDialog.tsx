@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
 import { nanoid } from "nanoid";
 
 import Button from "@mui/material/Button";
@@ -10,8 +9,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { LinearProgress } from "@mui/material";
 
-import api from "api";
-import { CreatePostT, UpdatePostT, PostT } from "types";
+import { useCreatePost, useUpdatePost } from "react-query-hooks/Post";
+import { PostT } from "types";
 
 type Props = {
   isOpen: boolean;
@@ -24,9 +23,20 @@ export const PostDialog: React.FC<Props> = ({
   setIsOpen,
   defaultValues,
 }) => {
-  const queryClient = useQueryClient();
   const [postBody, setPostBody] = useState<string>("");
   const [postTitle, setPostTitle] = useState<string>("");
+
+  const {
+    mutateAsync: createPost,
+    isLoading: createLoading,
+    isSuccess: successCreate,
+  } = useCreatePost();
+
+  const {
+    mutateAsync: updatePost,
+    isLoading: updateLoading,
+    isSuccess: successUpdate,
+  } = useUpdatePost(defaultValues?.id);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -34,32 +44,14 @@ export const PostDialog: React.FC<Props> = ({
     setPostTitle("");
   };
 
-  const { mutateAsync: createPost, isLoading: createLoading } = useMutation(
-    (post: CreatePostT) => api.postsService.createPost(post),
-    {
-      onSuccess: () => queryClient.invalidateQueries("posts"),
-      onSettled: handleClose,
-    }
-  );
-
-  const { mutateAsync: updatePost, isLoading: updateLoading } = useMutation(
-    ({ id, body }: { id: string; body: UpdatePostT }) =>
-      api.postsService.updatePost(id, body),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["post", defaultValues?.id]);
-        queryClient.invalidateQueries("posts");
-      },
-      onSettled: handleClose,
-    }
-  );
+  useEffect(() => {
+    if (successCreate || successUpdate) handleClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [successCreate, successUpdate]);
 
   const handleSubmit = () => {
     if (defaultValues) {
-      updatePost({
-        id: defaultValues.id,
-        body: { body: postBody, title: postTitle },
-      });
+      updatePost({ body: postBody, title: postTitle });
     } else {
       createPost({ id: nanoid(), body: postBody, title: postTitle });
     }

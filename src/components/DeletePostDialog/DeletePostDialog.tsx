@@ -3,9 +3,8 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import LinearProgress from "@mui/material/LinearProgress";
-import { useMutation, useQueryClient } from "react-query";
 
-import api from "api";
+import { useDeletePost } from "react-query-hooks/Post";
 
 import { useSelectedPostContext } from "context/selectedPostCotext";
 
@@ -25,18 +24,13 @@ export const DeletePostDialog: React.FC<Props> = ({
   };
   const { setSelectedPost } = useSelectedPostContext();
 
-  const queryClient = useQueryClient();
+  const { mutateAsync: deletePost, isLoading } = useDeletePost(postId);
 
-  const { mutateAsync: deletePost, isLoading } = useMutation(
-    () => api.postsService.deletePost(postId),
-    {
-      onSuccess: () => {
-        setSelectedPost?.(undefined);
-        queryClient.invalidateQueries("posts");
-      },
-      onSettled: handleClose,
-    }
-  );
+  const handleDelete = async () => {
+    await deletePost();
+    setSelectedPost?.(undefined);
+    setIsOpen(false);
+  };
 
   return (
     <Dialog
@@ -49,7 +43,7 @@ export const DeletePostDialog: React.FC<Props> = ({
       <LinearProgress sx={{ visibility: isLoading ? "visible" : "hidden" }} />
       <DialogActions>
         <Button onClick={handleClose}>Отмена</Button>
-        <Button onClick={() => deletePost()} autoFocus>
+        <Button onClick={handleDelete} autoFocus>
           Удалить
         </Button>
       </DialogActions>

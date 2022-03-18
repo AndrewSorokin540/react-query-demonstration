@@ -1,6 +1,4 @@
 import { useState } from "react";
-import api from "api";
-import { useQuery } from "react-query";
 import {
   Alert,
   CircularProgress,
@@ -12,8 +10,8 @@ import {
 
 import { PostDialog } from "components/PostDialog";
 import { DeletePostDialog } from "components/DeletePostDialog";
-
 import { useSelectedPostContext } from "context/selectedPostCotext";
+import { useGetPost } from "react-query-hooks/Post";
 
 export const Post: React.FC = () => {
   const { selectedPost } = useSelectedPostContext();
@@ -25,9 +23,7 @@ export const Post: React.FC = () => {
     isLoading,
     isFetching,
     refetch,
-  } = useQuery(["post", postId], () => api.postsService.getPostById(postId!), {
-    enabled: Boolean(postId),
-  });
+  } = useGetPost(postId);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

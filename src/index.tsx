@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "react-query";
 
 import App from "./App";
 
-const queryClient = new QueryClient();
+import { queryClient } from "react-query-hooks/queryClient";
 
 ReactDOM.render(
   <React.StrictMode>
