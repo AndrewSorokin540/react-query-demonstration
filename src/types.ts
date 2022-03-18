@@ -1,3 +1,9 @@
+export type PostPreviewT = {
+  id: string;
+  title: string;
+  body: string;
+};
+
 export type PostT = {
   id: string;
   title: string;

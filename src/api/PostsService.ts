@@ -1,15 +1,20 @@
 import { AxiosRequestConfig } from "axios";
 
-import type { PostT, CreatePostT, UpdatePostT } from "types";
+import type { PostPreviewT, PostT, CreatePostT, UpdatePostT } from "types";
 
 export default class PostsService {
   constructor(private server: <T>(config: AxiosRequestConfig) => Promise<T>) {}
 
   public getPosts = async () => {
-    return this.server<PostT[]>({
+    return this.server<PostPreviewT[]>({
       method: "GET",
       url: "/posts",
-    });
+    }).then((data) =>
+      data.map((post) => ({
+        ...post,
+        body: `${post.body.slice(0, 50)}...`,
+      }))
+    );
   };
 
   public getPostById = async (postId: string) => {

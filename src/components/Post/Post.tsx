@@ -36,7 +36,7 @@ export const Post: React.FC = () => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} sx={{ opacity: isFetching ? "0.5" : 1 }}>
+      <Grid item xs={12} sx={{ opacity: isLoading ? "0.5" : 1 }}>
         <Typography variant="h4">{post?.title}</Typography>
         <Typography>{post?.body}</Typography>
       </Grid>
