@@ -4,6 +4,10 @@ export type PostT = {
   body: string;
 };
 
+export type CreatePostT = PostT;
+
+export type UpdatePostT = Omit<PostT, "id">;
+
 export type CommentT = {
   id: string;
   body: string;

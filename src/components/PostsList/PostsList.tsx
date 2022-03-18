@@ -1,27 +1,35 @@
-import { List, ListItemButton, Alert, CircularProgress } from "@mui/material";
+import { useState } from "react";
+import {
+  List,
+  ListItemButton,
+  Alert,
+  CircularProgress,
+  Button,
+  Typography,
+} from "@mui/material";
 import { useQuery } from "react-query";
 
 import api from "api";
 
+import { PostDialog } from "components/PostDialog";
+
+import { useSelectedPostContext } from "context/selectedPostCotext";
+
 import { PostT } from "types";
 
-type Props = {
-  selectedPost?: PostT;
-  setSelectedPost: (post: PostT) => void;
-};
-
-export const PostsList: React.FC<Props> = ({
-  selectedPost,
-  setSelectedPost,
-}) => {
+export const PostsList: React.FC = () => {
   const {
     data: posts,
     isError,
     isLoading,
   } = useQuery("posts", api.postsService.getPosts);
 
+  const { selectedPost, setSelectedPost } = useSelectedPostContext();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const onPostClick = (post: PostT) => () => {
-    setSelectedPost(post);
+    setSelectedPost?.(post);
   };
 
   if (isError) return <Alert severity="error">Error!</Alert>;
@@ -29,16 +37,26 @@ export const PostsList: React.FC<Props> = ({
   if (isLoading) return <CircularProgress />;
 
   return (
-    <List>
-      {posts?.map((post) => (
-        <ListItemButton
-          key={post.id}
-          onClick={onPostClick(post)}
-          selected={post.id === selectedPost?.id}
-        >
-          {post.title}
-        </ListItemButton>
-      ))}
-    </List>
+    <>
+      <List>
+        {posts?.map((post) => (
+          <ListItemButton
+            key={post.id}
+            onClick={onPostClick(post)}
+            selected={post.id === selectedPost?.id}
+          >
+            <Typography>{post.title}</Typography>
+          </ListItemButton>
+        ))}
+      </List>
+      <Button
+        onClick={() => setIsModalOpen(true)}
+        variant="outlined"
+        sx={{ marginBottom: 2 }}
+      >
+        Добавить пост
+      </Button>
+      <PostDialog isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
+    </>
   );
 };
